@@ -19,7 +19,20 @@
     <div id="status">Loading PHP-WASM Node... (404 & Blob Fixed)</div>
     <div id="output"></div>
     <!-- PHP-WASM: Official CDN v0.0.9 for inline PHP -->
-    <script async type="text/javascript" src="https://cdn.jsdelivr.net/npm/php-wasm@0.0.9/php-tags.jsdelivr.mjs"></script>
+    <script type="module">
+    import { PhpWeb } from 'https://cdn.jsdelivr.net/npm/php-wasm@0.0.9/PhpWeb.mjs';
+    window.phpWasm = new PhpWeb({ persist: { mountPath: '/persist' } });
+    // Boot PHP
+    window.phpWasm.run(`
+        <?php
+        echo "PHP 8.3 Booted Successfully\\n";
+        echo "Extensions: json, openssl, sodium\\n";
+        echo "Current time: " . date('Y-m-d H:i:s') . "\\n";
+        mkdir('/data', 0777, true);
+        file_put_contents('/data/test.json', json_encode(['status' => 'ready']));
+        ?>
+    `).then(result => document.getElementById('output').textContent = result.stdout);
+</script>
     <script>
         // Wait for DOM to fix any null errors
         document.addEventListener('DOMContentLoaded', async function() {
